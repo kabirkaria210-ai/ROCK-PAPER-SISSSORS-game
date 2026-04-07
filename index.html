@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rock Paper Scissors — ARENA</title>
+
+  <!-- Google Fonts: Bebas Neue for headings, DM Sans for body -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+
+  <!-- ============================================================
+       ANIMATED BACKGROUND — canvas for floating particles
+       ============================================================ -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- ============================================================
+       MAIN GAME CONTAINER
+       ============================================================ -->
+  <div class="game-wrapper">
+
+    <!-- Header / Title -->
+    <header class="game-header">
+      <div class="title-badge">ARENA</div>
+      <h1 class="game-title">Rock · Paper · Scissors</h1>
+      <p class="game-subtitle">Choose your weapon. Beat the machine.</p>
+    </header>
+
+    <!-- ── SCOREBOARD ── -->
+    <div class="scoreboard">
+      <div class="score-card" id="player-score-card">
+        <span class="score-label">YOU</span>
+        <span class="score-value" id="player-score">0</span>
+      </div>
+
+      <div class="score-divider">VS</div>
+
+      <div class="score-card" id="cpu-score-card">
+        <span class="score-label">CPU</span>
+        <span class="score-value" id="cpu-score">0</span>
+      </div>
+    </div>
+
+    <!-- ── CHOICE DISPLAY AREA ── -->
+    <div class="battle-arena">
+
+      <!-- Player's chosen card (shown after selection) -->
+      <div class="choice-display" id="player-display">
+        <div class="choice-label">Your Pick</div>
+        <div class="choice-emoji" id="player-emoji">❓</div>
+        <div class="choice-name" id="player-name">—</div>
+      </div>
+
+      <!-- VS divider in the middle -->
+      <div class="vs-badge">⚔️</div>
+
+      <!-- Computer's chosen card (revealed after delay) -->
+      <div class="choice-display" id="cpu-display">
+        <div class="choice-label">CPU Pick</div>
+        <div class="choice-emoji" id="cpu-emoji">🤖</div>
+        <div class="choice-name" id="cpu-name">—</div>
+      </div>
+
+    </div>
+
+    <!-- ── STATUS / RESULT MESSAGE ── -->
+    <div class="status-bar" id="status-bar">
+      <span id="status-text">Pick a weapon to start!</span>
+    </div>
+
+    <!-- ── CHOICE BUTTONS ── -->
+    <div class="choices-row">
+
+      <button class="choice-btn" data-choice="rock" aria-label="Choose Rock">
+        <div class="btn-glow"></div>
+        <span class="btn-emoji">🪨</span>
+        <span class="btn-label">Rock</span>
+      </button>
+
+      <button class="choice-btn" data-choice="paper" aria-label="Choose Paper">
+        <div class="btn-glow"></div>
+        <span class="btn-emoji">📄</span>
+        <span class="btn-label">Paper</span>
+      </button>
+
+      <button class="choice-btn" data-choice="scissors" aria-label="Choose Scissors">
+        <div class="btn-glow"></div>
+        <span class="btn-emoji">✂️</span>
+        <span class="btn-label">Scissors</span>
+      </button>
+
+    </div>
+
+    <!-- ── RESTART BUTTON ── -->
+    <button class="restart-btn" id="restart-btn" aria-label="Reset scores">
+      ↺ Reset Scores
+    </button>
+
+    <!-- Round counter -->
+    <div class="round-counter">Round <span id="round-num">0</span></div>
+
+  </div><!-- end .game-wrapper -->
+
+  <!-- ── AUDIO ELEMENTS (short base64 beeps for offline use) ── -->
+  <!-- We generate sounds via Web Audio API in JS instead, no files needed -->
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
