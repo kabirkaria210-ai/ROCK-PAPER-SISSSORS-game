@@ -1,7 +1,6 @@
 import streamlit as st
 import random
 
-# ── Page config ────────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="Rock Paper Scissors",
     page_icon="🪨",
@@ -9,242 +8,244 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ── Inject CSS + JS animations ─────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap');
 
-/* ── Reset & base ── */
 html, body, [data-testid="stAppViewContainer"] {
-    background: #fff8f0 !important;
+    background: #080c14 !important;
 }
 [data-testid="stAppViewContainer"] {
-    background: radial-gradient(ellipse at 30% 10%, #ffe0b2 0%, #fff8f0 60%) !important;
+    background: linear-gradient(135deg, #080c14 0%, #0d1526 50%, #080c14 100%) !important;
 }
 [data-testid="stHeader"] { background: transparent !important; }
 [data-testid="block-container"] { padding-top: 2rem !important; }
 
-/* ── Typography ── */
-* { font-family: 'Space Mono', monospace; color: #1a1a2e; }
+* { font-family: 'Space Mono', monospace; color: #e2eeff; }
 
-.title-wrap {
-    text-align: center;
-    margin-bottom: 0.5rem;
-}
+/* ── Title ── */
+.title-wrap { text-align: center; margin-bottom: 0.4rem; }
 .game-title {
     font-family: 'Bebas Neue', sans-serif;
     font-size: clamp(3rem, 8vw, 5.5rem);
-    letter-spacing: 0.12em;
-    background: linear-gradient(135deg, #ff6b35 0%, #f7c948 50%, #00b4d8 100%);
+    letter-spacing: 0.14em;
+    background: linear-gradient(90deg, #00f5d4 0%, #00c8ff 40%, #ff2d78 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     line-height: 1;
     margin: 0;
-    animation: shimmer 4s ease-in-out infinite alternate;
     background-size: 200% 200%;
+    animation: shimmer 5s ease-in-out infinite alternate;
 }
 @keyframes shimmer {
     0%   { background-position: 0% 50%; }
     100% { background-position: 100% 50%; }
 }
 .subtitle {
-    font-size: 0.7rem;
-    letter-spacing: 0.4em;
-    color: #ff6b35;
+    font-size: 0.65rem;
+    letter-spacing: 0.45em;
+    color: #00c8ff;
     text-transform: uppercase;
-    margin-top: 0.2rem;
-    font-weight: 700;
+    margin-top: 0.3rem;
 }
 
-/* ── Score board ── */
+/* ── Scoreboard ── */
 .scoreboard {
     display: flex;
     justify-content: center;
-    gap: 1.2rem;
-    margin: 1.2rem 0;
+    gap: 1rem;
+    margin: 1.4rem 0;
 }
 .score-cell {
-    background: #ffffff;
-    border: 2px solid #ffe0b2;
-    border-radius: 12px;
-    padding: 0.7rem 1.6rem;
+    background: rgba(0, 200, 255, 0.06);
+    border: 1px solid rgba(0, 200, 255, 0.2);
+    border-radius: 14px;
+    padding: 0.8rem 1.8rem;
     text-align: center;
-    box-shadow: 0 4px 16px rgba(255,107,53,0.1);
-    transition: transform 0.2s;
-    min-width: 80px;
+    min-width: 84px;
+    transition: transform 0.2s, border-color 0.2s;
 }
-.score-cell:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(255,107,53,0.18); }
+.score-cell:hover {
+    transform: translateY(-3px);
+    border-color: rgba(0, 200, 255, 0.5);
+}
 .score-label {
-    font-size: 0.6rem;
-    letter-spacing: 0.3em;
+    font-size: 0.55rem;
+    letter-spacing: 0.35em;
     text-transform: uppercase;
-    color: #ff6b35;
-    margin-bottom: 0.2rem;
-    font-weight: 700;
+    color: #5b8db8;
+    margin-bottom: 0.25rem;
 }
 .score-num {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.4rem;
+    font-size: 2.6rem;
     line-height: 1;
 }
-.score-num.wins   { color: #06a77d; }
-.score-num.losses { color: #e63946; }
-.score-num.ties   { color: #f7c948; }
+.score-num.wins   { color: #00f5d4; }
+.score-num.losses { color: #ff2d78; }
+.score-num.ties   { color: #f5c842; }
 
-/* ── Battle arena ── */
+/* ── Move label ── */
+.move-label {
+    text-align: center;
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    color: #5b8db8;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+/* ── Arena ── */
 .arena {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 2rem;
-    margin: 1.5rem 0;
-    padding: 1.5rem;
-    background: #ffffff;
-    border: 2px solid #ffe0b2;
-    border-radius: 24px;
-    box-shadow: 0 6px 24px rgba(255,107,53,0.1);
+    margin: 1.4rem 0;
+    padding: 1.6rem;
+    background: rgba(0, 200, 255, 0.04);
+    border: 1px solid rgba(0, 200, 255, 0.15);
+    border-radius: 20px;
 }
 .arena-side { text-align: center; flex: 1; }
 .arena-label {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     letter-spacing: 0.4em;
-    color: #ff6b35;
-    margin-bottom: 0.5rem;
+    color: #00c8ff;
     text-transform: uppercase;
-    font-weight: 700;
+    margin-bottom: 0.5rem;
 }
 .arena-emoji {
     font-size: 4rem;
     display: block;
     line-height: 1.2;
-    animation: popIn 0.5s cubic-bezier(.34,1.56,.64,1) both;
+    animation: popIn 0.45s cubic-bezier(.34,1.56,.64,1) both;
 }
 @keyframes popIn {
-    0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+    0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
     100% { transform: scale(1) rotate(0deg);   opacity: 1; }
 }
 .arena-name {
-    font-size: 0.75rem;
-    color: #444;
-    margin-top: 0.3rem;
-    letter-spacing: 0.1em;
-    font-weight: 700;
+    font-size: 0.7rem;
+    color: #a0c4e8;
+    margin-top: 0.35rem;
+    letter-spacing: 0.12em;
 }
 .vs-badge {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 2rem;
-    color: #ff6b35;
-    letter-spacing: 0.1em;
+    font-size: 2.2rem;
+    color: #ff2d78;
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 20px rgba(255, 45, 120, 0.5);
 }
 
 /* ── Result banner ── */
 .result-banner {
     text-align: center;
-    padding: 1rem 2rem;
-    border-radius: 16px;
-    margin: 1rem 0;
+    padding: 0.9rem 2rem;
+    border-radius: 14px;
+    margin: 0.8rem 0;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.6rem;
+    font-size: 1.7rem;
     letter-spacing: 0.15em;
 }
 .result-win {
-    background: #d8f3eb;
-    border: 2px solid #06a77d;
-    color: #065f46;
-    animation: winPop 0.6s cubic-bezier(.34,1.56,.64,1) both;
+    background: rgba(0, 245, 212, 0.1);
+    border: 1px solid rgba(0, 245, 212, 0.4);
+    color: #00f5d4;
+    animation: winPop 0.55s cubic-bezier(.34,1.56,.64,1) both;
 }
 .result-loss {
-    background: #fde8ea;
-    border: 2px solid #e63946;
-    color: #9b1c27;
-    animation: lossShake 0.6s ease both;
+    background: rgba(255, 45, 120, 0.1);
+    border: 1px solid rgba(255, 45, 120, 0.4);
+    color: #ff2d78;
+    animation: lossShake 0.55s ease both;
 }
 .result-tie {
-    background: #fef9c3;
-    border: 2px solid #f7c948;
-    color: #7a5a00;
-    animation: slideUp 0.5s cubic-bezier(.34,1.56,.64,1) both;
+    background: rgba(245, 200, 66, 0.08);
+    border: 1px solid rgba(245, 200, 66, 0.3);
+    color: #f5c842;
+    animation: slideUp 0.45s cubic-bezier(.34,1.56,.64,1) both;
 }
 
 @keyframes winPop {
-    0%   { transform: scale(0.5); opacity: 0; }
-    60%  { transform: scale(1.08); }
+    0%   { transform: scale(0.6); opacity: 0; }
+    65%  { transform: scale(1.07); }
     100% { transform: scale(1); opacity: 1; }
 }
 @keyframes lossShake {
     0%   { transform: translateX(0); opacity: 0; }
-    15%  { transform: translateX(-10px); opacity: 1; }
-    30%  { transform: translateX(10px); }
-    45%  { transform: translateX(-8px); }
-    60%  { transform: translateX(8px); }
-    75%  { transform: translateX(-4px); }
+    10%  { opacity: 1; }
+    20%  { transform: translateX(-12px); }
+    40%  { transform: translateX(12px); }
+    55%  { transform: translateX(-7px); }
+    70%  { transform: translateX(7px); }
+    85%  { transform: translateX(-3px); }
     100% { transform: translateX(0); }
 }
 @keyframes slideUp {
-    0%   { transform: translateY(20px); opacity: 0; }
+    0%   { transform: translateY(18px); opacity: 0; }
     100% { transform: translateY(0);    opacity: 1; }
 }
 
-/* ── History table ── */
+/* ── History ── */
 .history-wrap {
     margin-top: 1.5rem;
-    border-top: 2px solid #ffe0b2;
+    border-top: 1px solid rgba(0, 200, 255, 0.12);
     padding-top: 1rem;
 }
 .history-title {
-    font-size: 0.6rem;
-    letter-spacing: 0.4em;
-    color: #ff6b35;
+    font-size: 0.55rem;
+    letter-spacing: 0.45em;
+    color: #5b8db8;
     text-transform: uppercase;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.7rem;
     text-align: center;
-    font-weight: 700;
 }
 .history-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.4rem 0.8rem;
+    padding: 0.35rem 0.9rem;
     border-radius: 8px;
-    font-size: 0.75rem;
-    transition: background 0.2s;
+    font-size: 0.7rem;
     gap: 0.5rem;
-    color: #1a1a2e;
+    color: #a0c4e8;
+    transition: background 0.15s;
 }
-.history-row:hover { background: #fff0e6; }
-.h-win  { border-left: 3px solid #06a77d; }
-.h-loss { border-left: 3px solid #e63946; }
-.h-tie  { border-left: 3px solid #f7c948; }
+.history-row:hover { background: rgba(0, 200, 255, 0.05); }
+.h-win  { border-left: 3px solid #00f5d4; }
+.h-loss { border-left: 3px solid #ff2d78; }
+.h-tie  { border-left: 3px solid #f5c842; }
 .h-badge {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     font-weight: 700;
     letter-spacing: 0.1em;
-    padding: 2px 8px;
-    border-radius: 6px;
+    padding: 2px 9px;
+    border-radius: 5px;
 }
-.h-badge.win  { background: #d8f3eb; color: #065f46; }
-.h-badge.loss { background: #fde8ea; color: #9b1c27; }
-.h-badge.tie  { background: #fef9c3; color: #7a5a00; }
+.h-badge.win  { background: rgba(0, 245, 212, 0.15); color: #00f5d4; }
+.h-badge.loss { background: rgba(255, 45, 120, 0.15); color: #ff2d78; }
+.h-badge.tie  { background: rgba(245, 200, 66, 0.12); color: #f5c842; }
 
-/* ── Streamlit button override ── */
+/* ── Streamlit buttons ── */
 .stButton > button {
-    background: #ff6b35 !important;
-    border: 2px solid #ff6b35 !important;
-    color: #ffffff !important;
+    background: rgba(0, 200, 255, 0.08) !important;
+    border: 1px solid rgba(0, 200, 255, 0.35) !important;
+    color: #00c8ff !important;
     font-family: 'Space Mono', monospace !important;
-    font-size: 0.75rem !important;
-    letter-spacing: 0.15em !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.18em !important;
     border-radius: 10px !important;
-    font-weight: 700 !important;
     transition: all 0.2s !important;
 }
 .stButton > button:hover {
-    background: #e85520 !important;
-    border-color: #e85520 !important;
+    background: rgba(0, 200, 255, 0.18) !important;
+    border-color: #00c8ff !important;
     color: #ffffff !important;
     transform: translateY(-2px) !important;
-    box-shadow: 0 8px 24px rgba(255,107,53,0.35) !important;
+    box-shadow: 0 8px 28px rgba(0, 200, 255, 0.2) !important;
 }
 .stButton > button:active { transform: translateY(0) !important; }
 
@@ -252,35 +253,44 @@ html, body, [data-testid="stAppViewContainer"] {
 #confetti-canvas {
     position: fixed; top: 0; left: 0;
     width: 100%; height: 100%;
+    pointer-events: none; z-index: 9999;
+}
+
+/* ── Grid lines background (decorative) ── */
+[data-testid="stAppViewContainer"]::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(0,200,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
     pointer-events: none;
-    z-index: 9999;
+    z-index: 0;
 }
 </style>
 
 <canvas id="confetti-canvas"></canvas>
 <script>
-// ── Confetti on WIN ────────────────────────────────────────────────────────────
 function launchConfetti() {
     const canvas = document.getElementById('confetti-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
-    const colors = ['#ff6b35','#f7c948','#00b4d8','#06a77d','#e63946','#ff9f1c'];
-    const pieces = Array.from({length: 120}, () => ({
+    const colors = ['#00f5d4','#00c8ff','#ff2d78','#f5c842','#a855f7','#ffffff'];
+    const pieces = Array.from({length: 140}, () => ({
         x: Math.random() * canvas.width,
-        y: -10 - Math.random() * 200,
-        w: 8 + Math.random() * 8,
-        h: 4 + Math.random() * 4,
+        y: -20 - Math.random() * 180,
+        w: 7 + Math.random() * 7,
+        h: 3 + Math.random() * 5,
         color: colors[Math.floor(Math.random() * colors.length)],
         rot: Math.random() * Math.PI * 2,
-        rotSpeed: (Math.random() - 0.5) * 0.15,
-        dx: (Math.random() - 0.5) * 3,
-        dy: 3 + Math.random() * 4,
+        rotSpeed: (Math.random() - 0.5) * 0.18,
+        dx: (Math.random() - 0.5) * 2.5,
+        dy: 3.5 + Math.random() * 4,
         alpha: 1
     }));
-
     let frame = 0;
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -293,7 +303,7 @@ function launchConfetti() {
             ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
             ctx.restore();
             p.x += p.dx; p.y += p.dy; p.rot += p.rotSpeed;
-            if (frame > 60) p.alpha -= 0.012;
+            if (frame > 55) p.alpha -= 0.014;
         });
         frame++;
         if (pieces.some(p => p.alpha > 0)) requestAnimationFrame(draw);
@@ -301,19 +311,14 @@ function launchConfetti() {
     }
     draw();
 }
-
-// ── Trigger based on result banner class ──────────────────────────────────────
 function checkResult() {
-    const banner = document.querySelector('.result-win');
-    if (banner) launchConfetti();
+    if (document.querySelector('.result-win')) launchConfetti();
 }
-// Poll after Streamlit re-renders
 setTimeout(checkResult, 300);
-setTimeout(checkResult, 700);
+setTimeout(checkResult, 750);
 </script>
 """, unsafe_allow_html=True)
 
-# ── Session state ──────────────────────────────────────────────────────────────
 for key, default in [('wins',0),('losses',0),('ties',0),('history',[]),('last_result',None)]:
     if key not in st.session_state:
         st.session_state[key] = default
@@ -325,26 +330,22 @@ BEATS  = {'R': 'S', 'S': 'P', 'P': 'R'}
 def play(user_choice: str):
     computer_choice = random.choice(['R', 'P', 'S'])
     if computer_choice == user_choice:
-        result, msg = 'tie', "It's a tie!"
+        result, msg = 'tie', "IT'S A TIE"
         st.session_state.ties += 1
     elif BEATS[user_choice] == computer_choice:
         result = 'win'
-        msg = f"{LABELS[user_choice]} beats {LABELS[computer_choice]} — you win! 🎉"
+        msg = f"{LABELS[user_choice]} BEATS {LABELS[computer_choice]} — YOU WIN 🎉"
         st.session_state.wins += 1
     else:
         result = 'loss'
-        msg = f"{LABELS[computer_choice]} beats {LABELS[user_choice]} — computer wins! 💀"
+        msg = f"{LABELS[computer_choice]} BEATS {LABELS[user_choice]} — CPU WINS 💀"
         st.session_state.losses += 1
-
-    st.session_state.last_result = {
-        'user': user_choice, 'cpu': computer_choice,
-        'result': result, 'msg': msg
-    }
+    st.session_state.last_result = {'user': user_choice, 'cpu': computer_choice, 'result': result, 'msg': msg}
     st.session_state.history.insert(0, st.session_state.last_result)
     if len(st.session_state.history) > 10:
         st.session_state.history = st.session_state.history[:10]
 
-# ── UI ─────────────────────────────────────────────────────────────────────────
+# ── Title ──
 st.markdown("""
 <div class="title-wrap">
   <p class="game-title">ROCK PAPER SCISSORS</p>
@@ -352,10 +353,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Score board
-w = st.session_state.wins
-l = st.session_state.losses
-t = st.session_state.ties
+# ── Scoreboard ──
+w, l, t = st.session_state.wins, st.session_state.losses, st.session_state.ties
 st.markdown(f"""
 <div class="scoreboard">
   <div class="score-cell">
@@ -373,69 +372,55 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Choice buttons
-st.markdown('<div style="text-align:center;font-size:0.65rem;letter-spacing:0.3em;color:#ff6b35;text-transform:uppercase;margin-bottom:0.5rem;font-weight:700;">Make your move</div>', unsafe_allow_html=True)
-
-col1, col2, col3, col_gap = st.columns([1, 1, 1, 0.01])
+# ── Move buttons ──
+st.markdown('<div class="move-label">Make your move</div>', unsafe_allow_html=True)
+col1, col2, col3, _ = st.columns([1, 1, 1, 0.01])
 with col1:
-    if st.button("🪨\nRock", key="btn_rock", use_container_width=True):
+    if st.button("🪨  Rock", key="btn_rock", use_container_width=True):
         play('R'); st.rerun()
 with col2:
-    if st.button("📄\nPaper", key="btn_paper", use_container_width=True):
+    if st.button("📄  Paper", key="btn_paper", use_container_width=True):
         play('P'); st.rerun()
 with col3:
-    if st.button("✂️\nScissors", key="btn_scissors", use_container_width=True):
+    if st.button("✂️  Scissors", key="btn_scissors", use_container_width=True):
         play('S'); st.rerun()
 
-# Battle arena + result
+# ── Arena + Result ──
 lr = st.session_state.last_result
 if lr:
-    user_e = EMOJIS[lr['user']]
-    cpu_e  = EMOJIS[lr['cpu']]
-    user_l = LABELS[lr['user']]
-    cpu_l  = LABELS[lr['cpu']]
-    res    = lr['result']
-    msg    = lr['msg']
-
     st.markdown(f"""
 <div class="arena">
   <div class="arena-side">
     <div class="arena-label">You</div>
-    <span class="arena-emoji">{user_e}</span>
-    <div class="arena-name">{user_l}</div>
+    <span class="arena-emoji">{EMOJIS[lr['user']]}</span>
+    <div class="arena-name">{LABELS[lr['user']]}</div>
   </div>
   <div class="vs-badge">VS</div>
   <div class="arena-side">
     <div class="arena-label">CPU</div>
-    <span class="arena-emoji">{cpu_e}</span>
-    <div class="arena-name">{cpu_l}</div>
+    <span class="arena-emoji">{EMOJIS[lr['cpu']]}</span>
+    <div class="arena-name">{LABELS[lr['cpu']]}</div>
   </div>
 </div>
-<div class="result-banner result-{res}">{msg}</div>
+<div class="result-banner result-{lr['result']}">{lr['msg']}</div>
 """, unsafe_allow_html=True)
 
-# Reset button
+# ── Reset ──
 _, mid, _ = st.columns([2, 1, 2])
 with mid:
     if st.button("↺  Reset Score", key="btn_reset", use_container_width=True):
         for k in ['wins','losses','ties','history','last_result']:
-            st.session_state[k] = 0 if k in ('wins','losses','ties') else ([] if k=='history' else None)
+            st.session_state[k] = 0 if k in ('wins','losses','ties') else ([] if k == 'history' else None)
         st.rerun()
 
-# History
+# ── History ──
 if st.session_state.history:
-    rows_html = ""
-    for h in st.session_state.history:
-        badge_cls = h['result']
-        badge_txt = h['result'].upper()
-        row_cls   = f"h-{h['result']}"
-        rows_html += f"""
-<div class="history-row {row_cls}">
+    rows_html = "".join(f"""
+<div class="history-row h-{h['result']}">
   <span>{EMOJIS[h['user']]} {LABELS[h['user']]}</span>
-  <span class="h-badge {badge_cls}">{badge_txt}</span>
+  <span class="h-badge {h['result']}">{h['result'].upper()}</span>
   <span>{EMOJIS[h['cpu']]} {LABELS[h['cpu']]}</span>
-</div>"""
-
+</div>""" for h in st.session_state.history)
     st.markdown(f"""
 <div class="history-wrap">
   <div class="history-title">Last 10 rounds</div>
